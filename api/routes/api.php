@@ -14,10 +14,34 @@ Route::group([
     Route::post('/me', 'AuthController@me');
 });
 
+//user routes
 Route::group(['middleware' => 'check-token'], function($router) {
   $router->get('/user', 'UserController@loggedUser');
   $router->get('/users', 'UserController@index');
   $router->get('/users/{id}', 'UserController@getById');
   $router->post('/users', 'UserController@create');
   $router->delete('/users/{id}', 'UserController@delete');
+});
+
+//department routes
+Route::group(['middleware' => 'check-token'], function($router) {
+  $router->get('/departments', 'DepartmentController@index');
+});
+
+//position routes
+Route::group(['middleware' => 'check-token'], function($router) {
+  $router->get('/positions', 'PositionController@index');
+});
+
+//applicant routes
+Route::group(['middleware' => 'check-token'], function($router) {
+  $router->get('/applicants', 'ApplicantController@index');
+});
+
+//recruitment routes
+Route::group(['middleware' => 'check-token'], function($router) {
+  $router->get('/recruitments', 'RecruitmentController@index');
+  $router->get('/recruitments/{id}', 'RecruitmentController@getById');
+  $router->post('/recruitments', 'RecruitmentController@create');
+  $router->delete('/recruitments/{id}', 'RecruitmentController@delete');
 });

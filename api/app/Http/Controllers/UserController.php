@@ -37,6 +37,8 @@ class UserController extends Controller implements CRUDInterface
     public function getById($id) {
       return User::find($id);
     }
+    
+    public function update(Request $request){}
 
     public function create(Request $request) {
       try {
