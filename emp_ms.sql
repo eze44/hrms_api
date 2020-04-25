@@ -33,7 +33,7 @@ CREATE TABLE `applicant` (
   PRIMARY KEY (`id`),
   KEY `position_id` (`position_id`),
   CONSTRAINT `applicant_ibfk_1` FOREIGN KEY (`position_id`) REFERENCES `positions` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -138,7 +138,7 @@ CREATE TABLE `payroll` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `payroll_ibfk_1` FOREIGN KEY (`manager_id`) REFERENCES `users` (`id`),
   CONSTRAINT `payroll_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -165,7 +165,7 @@ CREATE TABLE `positions` (
   PRIMARY KEY (`id`),
   KEY `department_id` (`department_id`),
   CONSTRAINT `positions_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -221,7 +221,7 @@ CREATE TABLE `recruitment` (
   KEY `applicant_id` (`applicant_id`),
   CONSTRAINT `recruitment_ibfk_1` FOREIGN KEY (`status_id`) REFERENCES `recruitment_status` (`id`),
   CONSTRAINT `recruitment_ibfk_2` FOREIGN KEY (`applicant_id`) REFERENCES `applicant` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -353,14 +353,11 @@ CREATE TABLE `task` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `description` text,
-  `department_id` int(11) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL,
+  `team_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `department_id` (`department_id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `task_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`),
-  CONSTRAINT `task_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
+  KEY `team_id` (`team_id`),
+  CONSTRAINT `task_ibfk_1` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -446,7 +443,7 @@ CREATE TABLE `user_metadata` (
   `country` varchar(255) DEFAULT NULL,
   `active` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -479,10 +476,12 @@ CREATE TABLE `user_request` (
   PRIMARY KEY (`id`),
   KEY `type_id` (`type_id`),
   KEY `status_id` (`status_id`),
+  KEY `user_id` (`user_id`),
   CONSTRAINT `user_request_ibfk_1` FOREIGN KEY (`type_id`) REFERENCES `user_request_type` (`id`),
   CONSTRAINT `user_request_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `user_request_type` (`id`),
-  CONSTRAINT `user_request_ibfk_3` FOREIGN KEY (`status_id`) REFERENCES `user_request_status` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+  CONSTRAINT `user_request_ibfk_3` FOREIGN KEY (`status_id`) REFERENCES `user_request_status` (`id`),
+  CONSTRAINT `user_request_ibfk_4` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -543,6 +542,34 @@ INSERT INTO `user_request_type` VALUES (1,'vacation'),(2,'long weekend'),(3,'sic
 UNLOCK TABLES;
 
 --
+-- Table structure for table `user_task`
+--
+
+DROP TABLE IF EXISTS `user_task`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_task` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `task_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `task_id` (`task_id`),
+  CONSTRAINT `user_task_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `user_task_ibfk_2` FOREIGN KEY (`task_id`) REFERENCES `task` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_task`
+--
+
+LOCK TABLES `user_task` WRITE;
+/*!40000 ALTER TABLE `user_task` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user_task` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `users`
 --
 
@@ -551,12 +578,10 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `department_id` int(11) DEFAULT NULL,
   `metadata_id` int(11) DEFAULT NULL,
   `role_id` int(11) DEFAULT NULL,
-  `email_verified_at` timestamp NULL DEFAULT NULL,
   `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -569,7 +594,7 @@ CREATE TABLE `users` (
   CONSTRAINT `users_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`),
   CONSTRAINT `users_ibfk_2` FOREIGN KEY (`metadata_id`) REFERENCES `user_metadata` (`id`),
   CONSTRAINT `users_ibfk_3` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -578,7 +603,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'endrit','ezhuri@gmail.com',1,1,1,NULL,'$2y$10$ZDNmbZnQlQzScLjZ8g2ao.Wpv6Gh2v5eKLjxMUrAMvuEef1rdaABO',NULL,'2019-05-27 17:36:50','2019-05-27 17:36:50'),(2,'Ali Ahme','jehona@company.com',4,NULL,2,NULL,'$2y$10$A0FdWVkc4WTJdxE.uNNfX.qngGYSzqePperwgCpE6RkPyzygOCROa',NULL,'2019-05-29 11:07:15','2019-05-29 11:20:01'),(6,'Bardh Fisteku','bardhi@company.com',4,NULL,2,NULL,'$2y$10$Yc1k52nXbqYXciByYi.RNu0lKcOojwlL0.QBZV5KMbb4DYlV8o2H.',NULL,'2019-05-29 11:19:07','2019-05-29 11:19:52'),(7,'test','test@gmail.com',NULL,NULL,NULL,NULL,'$2y$10$HgaVvfNtsxmJM.snQudl6.Z1ChrCxubbXKpawyYusL7dD9lH893Ra',NULL,'2019-05-29 20:14:43','2019-05-29 20:14:43'),(8,'somone','some@gmail.com',4,NULL,2,NULL,'$2y$10$83c2G55JmWDbIaMdDotDv.o/qELDvuegB2yQIHgo1/G46msHi8xry',NULL,'2019-05-29 20:28:25','2019-05-29 20:28:25'),(9,'Filan','filan@gmail.com',4,NULL,3,NULL,'$2y$10$foZB6qEbA/yh1R.4B2eLg.h/7bKcEwgJBbjKo16ovpoAhfMzF26Ou','','2019-05-30 17:23:33','2019-05-30 17:23:33'),(10,'namename','name@gmail.com',1,NULL,1,NULL,'$2y$10$k2gKrsJlxT.SYMhrzKJ3neRXSwM8GDlcWAr5PdSdyKmeQwSC6fDgW',NULL,'2019-06-03 10:47:25','2019-06-03 10:47:25'),(11,'lum beqiri','lum beqiri@company.com',NULL,NULL,3,NULL,'$2y$10$Id795vMOwUzHQgEVH3oNAusKcAx5z6nTcbTIQ7jvV.iEv2BMcl73e',NULL,'2020-04-04 14:28:33','2020-04-04 14:34:15'),(12,'asd asd','asd asd@company.com',4,NULL,3,NULL,'$2y$10$hQf6rqvgpXcHGO86mFZSA.JVpGBYzlFwsdVeHZWhWr2AJaubDfXle',NULL,'2020-04-04 14:34:41','2020-04-04 14:34:41');
+INSERT INTO `users` VALUES (1,'ezhuri@gmail.com',1,1,1,'$2y$10$ZDNmbZnQlQzScLjZ8g2ao.Wpv6Gh2v5eKLjxMUrAMvuEef1rdaABO',NULL,'2019-05-27 17:36:50','2019-05-27 17:36:50');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -591,4 +616,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-16 10:47:57
+-- Dump completed on 2020-04-25 10:42:35
