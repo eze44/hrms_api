@@ -36,6 +36,7 @@ Route::group(['middleware' => 'check-token'], function($router) {
 //applicant routes
 Route::group(['middleware' => 'check-token'], function($router) {
   $router->get('/applicants', 'ApplicantController@index');
+  $router->post('/applicants', 'ApplicantController@create');
 });
 
 //recruitment routes
@@ -44,4 +45,10 @@ Route::group(['middleware' => 'check-token'], function($router) {
   $router->get('/recruitments/{id}', 'RecruitmentController@getById');
   $router->post('/recruitments', 'RecruitmentController@create');
   $router->delete('/recruitments/{id}', 'RecruitmentController@delete');
+});
+
+
+//payroll routes
+Route::group(['middleware' => 'check-token'], function($router) {
+  $router->post('/payrolls', 'PayrollController@create');
 });

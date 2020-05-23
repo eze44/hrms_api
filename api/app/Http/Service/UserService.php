@@ -36,26 +36,5 @@ class UserMetadataService {
       return $md->id;
     }
     return 0;
-
-    // DB::table($this->table)->insert([
-    //   'first_name' => $data['first_name'],
-    //   'last_name' => $data['last_name'],
-    //   'base_salary' => $data['base_salary'],
-    //   'street' => $data['street'],
-    //   'city' => $data['city'],
-    //   'country' => $data['country'],
-    //   'active' => 1
-    // ]);
-
-    // $meta = DB::table($this->table)->where([
-    //     'first_name' => $data['first_name'],
-    //     'last_name' => $data['last_name'],
-    //     'base_salary' => $data['base_salary'],
-    //     'street' => $data['street'],
-    //     'city' => $data['city'],
-    //     'country' => $data['country'],
-    //     'active' => 1
-    //   ])->first();
-    // return $meta->id;
   }
 }

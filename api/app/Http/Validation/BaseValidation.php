@@ -43,4 +43,8 @@ class BaseValidation {
     }
   }
 
+  protected function validateEmail($input) {
+    //validate email with regex
+  }
+
 }

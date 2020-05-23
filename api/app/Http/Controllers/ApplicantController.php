@@ -3,10 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Applicant;
+use App\Position;
+use App\Http\Response\JsonError;
+use App\Http\Response\JsonSuccess;
 use Illuminate\Http\Request;
+use App\Http\Service\ApplicantService;
+use App\Http\Validation\ApplicantValidation;
+use App\Http\Exceptions\ValidationException;
 
 class ApplicantController extends Controller
 {
+    private $applicantService;
+
+    public function __construct() {
+      $this->middleware('api');
+      $this->applicantValidation = new ApplicantValidation();
+      $this->applicantService = new ApplicantService();
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +27,7 @@ class ApplicantController extends Controller
      */
     public function index()
     {
-        //
+        return Applicant::get();
     }
 
     /**
@@ -22,20 +35,25 @@ class ApplicantController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
-    }
+        try {
+          $this->applicantValidation->validateCreate($request);
+        } catch(ValidationException $e) {
+          return JsonError::message($e->getMessage());
+        }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+        try {
+          $this->applicantService->insert([
+            'first_name' => $request->input('first_name'),
+            'last_name' => $request->input('last_name'),
+            'personal_email' => $request->input('personal_email'),
+            'position_id' => $request->input('position_id')
+          ]);
+        } catch(QueryException $e) {
+          return JsonError::message('Something went wrong');
+        }
+        return JsonSuccess::message('Applicant created');
     }
 
     /**
