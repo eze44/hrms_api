@@ -28,6 +28,12 @@ Route::group(['middleware' => 'check-token'], function($router) {
   $router->get('/departments', 'DepartmentController@index');
 });
 
+
+//role routes
+Route::group(['middleware' => 'check-token'], function($router){
+  $router->get('/roles', 'RoleController@index');
+});
+
 //position routes
 Route::group(['middleware' => 'check-token'], function($router) {
   $router->get('/positions', 'PositionController@index');
