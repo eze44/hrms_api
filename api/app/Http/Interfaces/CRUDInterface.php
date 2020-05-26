@@ -11,6 +11,6 @@ interface CRUDInterface
   public function index();
   public function getById($id);
   public function create(Request $request);
-  public function update(Request $request);
+  public function update(Request $request, $id);
   public function delete($id);
 }

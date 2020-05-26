@@ -11,7 +11,9 @@ use App\Http\Response\JsonError;
 use App\Http\Response\JsonSuccess;
 use App\Http\Service\UserService;
 use App\Http\Service\UserMetadataService;
+use Illuminate\Support\Facades\DB;
 use App\User;
+USE App\UserMetadata;
 
 class UserController extends Controller implements CRUDInterface
 {
@@ -38,7 +40,39 @@ class UserController extends Controller implements CRUDInterface
       return User::find($id);
     }
     
-    public function update(Request $request){}
+    public function update(Request $request, $id){
+      try {
+        $this->userValidation->validateCreateUser($request);
+      } catch(ValidationException $e) {
+        return JsonError::message($e->getMessage());
+      }
+
+      $user = User::findOrFail($id);
+
+      if (empty($user)) {
+        return JsonError::message("No data found");
+      }
+      else {
+        $meta_id = $this->metadataService->insert([
+          'first_name' => $request->input('first_name'),
+          'last_name' => $request->input('last_name'),
+          'base_salary' => $request->input('base_salary'),
+          'street' => $request->input('street'),
+          'city' => $request->input('city'),
+          'country' => $request->input('country')
+        ]);
+
+        DB::table('users')->where('id', $id)->update([
+          'email' => $request->input('email'),
+          'department_id' => $request->input('department_id'),
+          'metadata_id' => $meta_id,
+          'role_id' => $request->input('role_id'),
+          'password' => bcrypt($request->input('password'))
+        ]);
+          
+        return JsonSuccess::message("Succesfully updated user with id: ".$id);
+      }
+    }
 
     public function create(Request $request) {
       try {

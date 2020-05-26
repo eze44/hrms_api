@@ -20,6 +20,7 @@ Route::group(['middleware' => 'check-token'], function($router) {
   $router->get('/users', 'UserController@index');
   $router->get('/users/{id}', 'UserController@getById');
   $router->post('/users', 'UserController@create');
+  $router->patch('/users/{id}', 'UserController@update');
   $router->delete('/users/{id}', 'UserController@delete');
 });
 
