@@ -42,12 +42,13 @@ class UserController extends Controller implements CRUDInterface
     
     public function update(Request $request, $id){
       try {
-        $this->userValidation->validateCreateUser($request);
+        $update_password = $this->userValidation->validateUpdateUser($request);
       } catch(ValidationException $e) {
         return JsonError::message($e->getMessage());
       }
 
       $user = User::findOrFail($id);
+      $password = $user->getAuthPassword();
 
       if (empty($user)) {
         return JsonError::message("No data found");
@@ -61,14 +62,24 @@ class UserController extends Controller implements CRUDInterface
           'city' => $request->input('city'),
           'country' => $request->input('country')
         ]);
-
-        DB::table('users')->where('id', $id)->update([
-          'email' => $request->input('email'),
-          'department_id' => $request->input('department_id'),
-          'metadata_id' => $meta_id,
-          'role_id' => $request->input('role_id'),
-          'password' => bcrypt($request->input('password'))
-        ]);
+        
+        if ($update_password == TRUE) {
+          DB::table('users')->where('id', $id)->update([
+            'email' => $request->input('email'),
+            'department_id' => $request->input('department_id'),
+            'metadata_id' => $meta_id,
+            'role_id' => $request->input('role_id'),
+            'password' => bcrypt($request->input('password'))
+          ]);
+        }
+        else {
+          DB::table('users')->where('id', $id)->update([
+            'email' => $request->input('email'),
+            'department_id' => $request->input('department_id'),
+            'metadata_id' => $meta_id,
+            'role_id' => $request->input('role_id')
+          ]);
+        }
           
         return JsonSuccess::message("Succesfully updated user with id: ".$id);
       }
