@@ -27,6 +27,9 @@ Route::group(['middleware' => 'check-token'], function($router) {
 //department routes
 Route::group(['middleware' => 'check-token'], function($router) {
   $router->get('/departments', 'DepartmentController@index');
+  $router->get('/departments/{id}', 'DepartmentController@getById');
+  $router->delete('/departments/{id}', 'DepartmentController@delete');
+
 });
 
 
