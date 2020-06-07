@@ -30,6 +30,10 @@ class ApplicantController extends Controller
         return Applicant::get();
     }
 
+    public function getById($id) {
+      return Applicant::find($id);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -57,37 +61,27 @@ class ApplicantController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Applicant  $applicant
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Applicant $applicant)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Applicant  $applicant
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Applicant $applicant)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Applicant  $applicant
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Applicant $applicant)
+    public function update(Request $request, $id)
     {
-        //
+      $applicant = Applicant::findOrFail($id);
+
+      try {
+        $this->applicantService->update([
+          'first_name' => $request->input('first_name'),
+          'last_name' => $request->input('last_name'),
+          'personal_email' => $request->input('personal_email'),
+          'position_id' => $request->input('position_id')
+        ], $id);
+      } catch(QueryException $e) {
+        return JsonError::message('Something went wrong');
+      }
+      return JsonSuccess::message('Applicant updated');
     }
 
     /**
@@ -96,8 +90,16 @@ class ApplicantController extends Controller
      * @param  \App\Applicant  $applicant
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Applicant $applicant)
+    public function delete($id)
     {
-        //
+      try {
+        $t = Applicant::find($id)->delete();
+        if ($t) {
+          return JsonSuccess::message('Applicant deleted');
+        }
+      }catch(Exception $e) {
+        return JsonError::message('Could not delete applicant, try again later');
+      }
+      return JsonError::message('Something went wrong');
     }
 }

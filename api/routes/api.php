@@ -28,8 +28,9 @@ Route::group(['middleware' => 'check-token'], function($router) {
 Route::group(['middleware' => 'check-token'], function($router) {
   $router->get('/departments', 'DepartmentController@index');
   $router->get('/departments/{id}', 'DepartmentController@getById');
+  $router->post('/departments', 'DepartmentController@create');
+  $router->patch('/departments/{id}', 'DepartmentController@update');
   $router->delete('/departments/{id}', 'DepartmentController@delete');
-
 });
 
 
@@ -41,12 +42,20 @@ Route::group(['middleware' => 'check-token'], function($router){
 //position routes
 Route::group(['middleware' => 'check-token'], function($router) {
   $router->get('/positions', 'PositionController@index');
+  $router->get('/positions/{id}', 'PositionController@getbyId');
+  $router->post('/positions', 'PositionController@create');
+  $router->patch('/positions/{id}', 'PositionController@update');
+  $router->delete('/positions/{id}', 'PositionController@delete');
 });
 
 //applicant routes
 Route::group(['middleware' => 'check-token'], function($router) {
   $router->get('/applicants', 'ApplicantController@index');
+  $router->get('/applicants/{id}', 'ApplicantController@getById');
   $router->post('/applicants', 'ApplicantController@create');
+  $router->patch('/applicants/{id}', 'ApplicantController@update');
+  $router->delete('/applicants/{id}', 'ApplicantController@delete');
+
 });
 
 //recruitment routes
