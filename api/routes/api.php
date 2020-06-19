@@ -67,6 +67,10 @@ Route::group(['middleware' => 'check-token'], function($router) {
   $router->delete('/recruitments/{id}', 'RecruitmentController@delete');
 });
 
+//recruitment status routes
+Route::group(['middleware' => 'check-token'], function($router) {
+  $router->get('/recruitmentstatus', 'RecruitmentStatusController@index');
+});
 
 //payroll routes
 Route::group(['middleware' => 'check-token'], function($router) {

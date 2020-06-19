@@ -14,7 +14,7 @@ class RecruitmentStatusController extends Controller
      */
     public function index()
     {
-        //
+        return RecruitmentStatus::all();
     }
 
     /**
