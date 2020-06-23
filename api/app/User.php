@@ -21,11 +21,13 @@ class User extends Authenticatable implements JWTSubject
         'department_id', 'created_at', 'updated_at', 'email_verified_at', 'role_id'
     ];
 
-    public $with = ['metadata', 'department', 'role'];
+    public static $DEFAULT_PWD = "123123";
 
-    public function metadata() {
-      return $this->belongsTo('App\UserMetadata', 'metadata_id');
-    }
+    public $with = ['department', 'role'];
+
+//    public function metadata() {
+//      return $this->belongsTo('App\UserMetadata', 'metadata_id');
+//    }
 
     public function department() {
       return $this->belongsTo('App\Department', 'department_id');

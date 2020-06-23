@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Service\UserService;
 use App\Recruitment;
+use App\RecruitmentStatus;
+use App\Role;
+use App\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use App\Http\Response\JsonError;
 use App\Http\Response\JsonSuccess;
@@ -12,10 +17,12 @@ use App\Http\Service\RecruitmentService;
 class RecruitmentController extends Controller
 {
     private $recruitmentService;
+    private $userService;
 
     public function __construct() {
         $this->middleware('api');
         $this->recruitmentService = new RecruitmentService();
+        $this->userService = new UserService();
     }
 
     public function index() {
@@ -47,8 +54,24 @@ class RecruitmentController extends Controller
         }
         else {
             try {
+                $status = $request->input('status_id');
+                if($status == RecruitmentStatus::$APPROVED_STATUS) {
+                    $this->userService->insert([
+                        'email' => $recruitment->applicant->personal_email,
+                        'department_id' => $recruitment->applicant->position->department_id,
+                        'first_name' => $recruitment->applicant->first_name,
+                        'last_name' => $recruitment->applicant->last_name,
+                        'base_salary' => 0, //this must be agreed salary as an input field
+                        'street' => $recruitment->applicant->street,
+                        'city' => $recruitment->applicant->city,
+                        'country' => $recruitment->applicant->country,
+                        'active' => 1,
+                        'role_id' => Role::$EMPLOYEE,
+                        'password' => bcrypt(User::$DEFAULT_PWD)
+                    ]);
+                }
                 $this->recruitmentService->update([
-                    'status_id' => $request->input('status_id'),
+                    'status_id' => $status,
                     'applicant_id' => $request->input('applicant_id'),
                     'notes' => $request->input('notes')
                 ], $id);
@@ -65,7 +88,7 @@ class RecruitmentController extends Controller
             if ($d) {
                 return JsonSuccess::message('Recruitment deleted');
             }
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             return JsonError::message('Could not delete recruitment, try again later');
         }
             return JsonError::message('Something went wrong');

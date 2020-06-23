@@ -19,13 +19,11 @@ class UserController extends Controller implements CRUDInterface
 {
     private $userValidation;
     private $userService;
-    private $metadataService;
 
     public function __construct() {
       $this->middleware('api');
       $this->userValidation = new UserValidation();
       $this->userService = new UserService();
-      $this->metadataService = new UserMetadataService();
     }
 
     public function loggedUser(Request $req) {
@@ -39,7 +37,7 @@ class UserController extends Controller implements CRUDInterface
     public function getById($id) {
       return User::find($id);
     }
-    
+
     public function update(Request $request, $id){
       try {
         $update_password = $this->userValidation->validateUpdateUser($request);
@@ -54,66 +52,62 @@ class UserController extends Controller implements CRUDInterface
         return JsonError::message("No data found");
       }
       else {
-        $meta_id = $this->metadataService->insert([
-          'first_name' => $request->input('first_name'),
-          'last_name' => $request->input('last_name'),
-          'base_salary' => $request->input('base_salary'),
-          'street' => $request->input('street'),
-          'city' => $request->input('city'),
-          'country' => $request->input('country')
-        ]);
-        
         if ($update_password == TRUE) {
           DB::table('users')->where('id', $id)->update([
-            'email' => $request->input('email'),
-            'department_id' => $request->input('department_id'),
-            'metadata_id' => $meta_id,
-            'role_id' => $request->input('role_id'),
-            'password' => bcrypt($request->input('password'))
+              'first_name' => $request->input('first_name'),
+              'last_name' => $request->input('last_name'),
+              'base_salary' => $request->input('base_salary'),
+              'street' => $request->input('street'),
+              'city' => $request->input('city'),
+              'country' => $request->input('country'),
+              'email' => $request->input('email'),
+              'department_id' => $request->input('department_id'),
+              'role_id' => $request->input('role_id'),
+              'password' => bcrypt($request->input('password'))
           ]);
         }
         else {
           DB::table('users')->where('id', $id)->update([
-            'email' => $request->input('email'),
-            'department_id' => $request->input('department_id'),
-            'metadata_id' => $meta_id,
-            'role_id' => $request->input('role_id')
+              'first_name' => $request->input('first_name'),
+              'last_name' => $request->input('last_name'),
+              'base_salary' => $request->input('base_salary'),
+              'street' => $request->input('street'),
+              'city' => $request->input('city'),
+              'country' => $request->input('country'),
+              'email' => $request->input('email'),
+              'department_id' => $request->input('department_id'),
+              'role_id' => $request->input('role_id')
           ]);
         }
-          
+
         return JsonSuccess::message("Succesfully updated user with id: ".$id);
       }
     }
 
     public function create(Request $request) {
-      try {
-        $this->userValidation->validateCreateUser($request);
-      } catch(ValidationException $e) {
-        return JsonError::message($e->getMessage());
-      }
-      $meta_id = $this->metadataService->insert([
-        'first_name' => $request->input('first_name'),
-        'last_name' => $request->input('last_name'),
-        'base_salary' => $request->input('base_salary'),
-        'street' => $request->input('street'),
-        'city' => $request->input('city'),
-        'country' => $request->input('country'),
-      ]);
-      if ($meta_id) {
         try {
-          $this->userService->insert([
-            'email' => $request->input('email'),
-            'department_id' => $request->input('department_id'),
-            'metadata_id' => $meta_id,
-            'role_id' => $request->input('role_id'),
-            'password' => bcrypt($request->input('password'))
-          ]);
+        $this->userValidation->validateCreateUser($request);
+        } catch(ValidationException $e) {
+            return JsonError::message($e->getMessage());
+        }
+        try {
+            $this->userService->insert([
+                'first_name' => $request->input('first_name'),
+                'last_name' => $request->input('last_name'),
+                'street' => $request->input('street'),
+                'city' => $request->input('city'),
+                'country' => $request->input('country'),
+                'base_salary' => $request->input('base_salary'),
+                'active' => false,
+                'email' => $request->input('email'),
+                'department_id' => $request->input('department_id'),
+                'role_id' => $request->input('role_id'),
+                'password' => bcrypt($request->input('password'))
+            ]);
         } catch(QueryException $e) {
-          return JsonError::message('Duplicate entry');
+            return JsonError::message('Duplicate entry');
         }
         return JsonSuccess::message('User created');
-      }
-      return JsonError::message('Something went wrong');
     }
 
     public function delete($id) {
