@@ -56,7 +56,7 @@ class PayrollController extends Controller
           "bonus" => $bonus
         ]);
 
-        $this->mail($user->fullname(), $user->email, $bonus); //this should be enqueued in real life
+        //$this->mail($user->fullname(), $user->email, $bonus); //this should be enqueued in real life
       }
       return JsonSuccess::message("Payrolls generated");
     }
