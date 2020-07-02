@@ -9,10 +9,10 @@ class PayrollService {
 
   public function insert($data) {
     DB::table($this->table)->insert([
-      'first_name' => $data['first_name'],
-      'last_name' => $data['last_name'],
-      'personal_email' => $data['personal_email'],
-      'position_id' => $data['position_id']
+      'manager_id' => $data['manager_id'],
+      'user_id' => $data['user_id'],
+      'sum' => $data['sum'],
+      'bonus' => $data['bonus']
     ]);
   }
 }

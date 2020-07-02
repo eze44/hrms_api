@@ -29,6 +29,10 @@ class User extends Authenticatable implements JWTSubject
 //      return $this->belongsTo('App\UserMetadata', 'metadata_id');
 //    }
 
+    public function fullname() {
+        return $this->first_name . " " . $this->last_name;
+    }
+
     public function department() {
       return $this->belongsTo('App\Department', 'department_id');
     }

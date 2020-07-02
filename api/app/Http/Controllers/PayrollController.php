@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Response\JsonSuccess;
 use App\Payroll;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Service\PayrollService;
+use Illuminate\Support\Facades\Mail;
 
 class PayrollController extends Controller
 {
@@ -39,7 +42,7 @@ class PayrollController extends Controller
       $users = User::get();
       foreach($users as $user) {
         $bonus = 0;
-        if (empty($bonus_users)) {
+        if (!empty($bonus_users)) {
           foreach($bonus_users as $bon_user) {
             if ($user->id == $bon_user->user_id) {
               $bonus = $bon_user->bonus;
@@ -49,12 +52,30 @@ class PayrollController extends Controller
         $this->payrollService->insert([
           "manager_id" => $manager->id,
           "user_id" => $user->id,
-          "sum" => $user->metadata->base_salary,
+          "sum" => $user->base_salary,
           "bonus" => $bonus
         ]);
-        //insert to email queue
+
+        $this->mail($user->fullname(), $user->email); //this should be enqueued in real life
       }
-      dd($manager);
+      return JsonSuccess::message("Payrolls generated");
+    }
+
+    public function mail($to_name, $to_email)
+    {
+      $data = array("name"=> $to_name);
+
+      try {
+          Mail::send("mail", $data, function($message) use ($to_name, $to_email) {
+              $message->to($to_email, $to_name)->subject("My subject");
+              $message->from(env("MAIL_FROM_ADDRESS"), "Company provided");
+          });
+      } catch (\Exception $exception) {
+          //log exception
+          return false;
+      }
+
+      return true;
     }
 
     /**
