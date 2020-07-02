@@ -44,8 +44,8 @@ class PayrollController extends Controller
         $bonus = 0;
         if (!empty($bonus_users)) {
           foreach($bonus_users as $bon_user) {
-            if ($user->id == $bon_user->user_id) {
-              $bonus = $bon_user->bonus;
+            if ($user->id == $bon_user["user_id"]) {
+              $bonus = $bon_user["bonus"];
             }
           }
         }
@@ -56,14 +56,14 @@ class PayrollController extends Controller
           "bonus" => $bonus
         ]);
 
-        $this->mail($user->fullname(), $user->email); //this should be enqueued in real life
+        $this->mail($user->fullname(), $user->email, $bonus); //this should be enqueued in real life
       }
       return JsonSuccess::message("Payrolls generated");
     }
 
-    public function mail($to_name, $to_email)
+    public function mail($to_name, $to_email, $bonus)
     {
-      $data = array("name"=> $to_name);
+      $data = ["name"=> $to_name, "bonus" => $bonus];
 
       try {
           Mail::send("mail", $data, function($message) use ($to_name, $to_email) {
