@@ -63,6 +63,7 @@ Route::group(['middleware' => 'check-token'], function($router) {
   $router->get('/recruitments', 'RecruitmentController@index');
   $router->get('/recruitments/{id}', 'RecruitmentController@getById');
   $router->post('/recruitments', 'RecruitmentController@create');
+  $router->post('/recruitments/{id}', 'RecruitmentController@create');
   $router->patch('/recruitments/{id}', 'RecruitmentController@update');
   $router->delete('/recruitments/{id}', 'RecruitmentController@delete');
 });

@@ -33,17 +33,34 @@ class RecruitmentController extends Controller
         return Recruitment::find($id);
     }
 
-    public function create(Request $request) {
-        try {
-            $this->recruitmentService->insert([
-                'status_id' => $request->input('status_id'),
-                'applicant_id' => $request->input('applicant_id'),
-                'notes' => $request->input('notes')
-            ]);
-        } catch(QueryException $e) {
-            return JsonError::message('Something went wrong');
+    public function create(Request $request, $id=null) {
+        if ($id == null) {
+            try {
+                $this->recruitmentService->insert([
+                    'status_id' => $request->input('status_id'),
+                    'applicant_id' => $request->input('applicant_id'),
+                    'notes' => $request->input('notes')
+                ]);
+            } catch(QueryException $e) {
+                return JsonError::message('Something went wrong');
+            }
+
+            return JsonSuccess::message("Recruitment Created");
         }
-        return JsonSuccess::message("Recruitment Created");
+
+        else {
+            try {
+                $this->recruitmentService->insert([
+                    'status_id' => 1,
+                    'applicant_id' => $id,
+                    'notes' => $request->input('notes')
+                ]);
+            } catch(QueryException $e) {
+                return JsonError::message('Something went wrong');
+            }
+
+            return JsonSuccess::message("Recruitment Created");
+        }
     }
 
     public function update(Request $request, $id) {
