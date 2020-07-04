@@ -27,7 +27,7 @@ class ApplicantController extends Controller
      */
     public function index()
     {
-        return Applicant::get();
+        return Applicant::simplePaginate(10);
     }
 
     public function getById($id) {

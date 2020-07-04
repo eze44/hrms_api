@@ -31,7 +31,7 @@ class UserController extends Controller implements CRUDInterface
     }
 
     public function index() {
-      return User::get();
+      return User::simplePaginate(10);
     }
 
     public function getById($id) {

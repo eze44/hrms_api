@@ -26,7 +26,7 @@ class RecruitmentController extends Controller
     }
 
     public function index() {
-        return Recruitment::all();
+        return Recruitment::simplePaginate(10);
     }
 
     public function getById($id) {
