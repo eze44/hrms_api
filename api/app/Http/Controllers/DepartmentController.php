@@ -18,9 +18,9 @@ class DepartmentController extends Controller
         $this->middleware('api');
         $this->departmentService = new DepartmentService();
     }
-    
+
     public function index() {
-        return Department::all();
+        return Department::simplePaginate(10);
     }
 
     public function getById($id) {

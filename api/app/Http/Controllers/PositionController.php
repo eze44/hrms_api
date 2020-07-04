@@ -19,7 +19,7 @@ class PositionController extends Controller
 
     public function index()
     {
-        return Position::all();
+        return Position::simplePaginate(10);
     }
 
     public function getById($id) {
@@ -40,7 +40,7 @@ class PositionController extends Controller
     }
 
     public function update(Request $request, $id) {
-        
+
         $position = Position::findOrFail($id);
 
         if (empty($position)) {
