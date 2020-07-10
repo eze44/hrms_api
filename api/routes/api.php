@@ -76,4 +76,8 @@ Route::group(['middleware' => 'check-token'], function($router) {
 //payroll routes
 Route::group(['middleware' => 'check-token'], function($router) {
   $router->post('/payrolls', 'PayrollController@create');
+  $router->get('/payrolls', 'PayrollController@index');
+  $router->get('/payrolls/{id}', 'PayrollController@getById');
+  $router->patch('/payrolls/{id}/{user_id}', 'PayrollController@update');
+  $router->delete('/payrolls/{id}', 'PayrollController@delete');
 });

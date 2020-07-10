@@ -19,4 +19,17 @@ class PayrollService {
 
       ]);
   }
+
+  public function update($data, $id) {
+    $date = date('Y-m-d H:i:s');
+    DB::table($this->table)->where('id', $id)->update([
+      'manager_id' => $data['manager_id'],
+      'user_id' => $data['user_id'],
+      'sum' => $data['sum'],
+      'bonus' => $data['bonus'],
+        'created_at' => $date,
+        'updated_at' => $date
+
+      ]);
+  }
 }

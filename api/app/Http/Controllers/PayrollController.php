@@ -25,7 +25,11 @@ class PayrollController extends Controller
      */
     public function index()
     {
-        //
+      return Payroll::simplePaginate(10);
+    }
+
+    public function getById($id) {
+      return Payroll::find($id);
     }
 
     /**
@@ -107,9 +111,23 @@ class PayrollController extends Controller
      * @param  \App\Payroll  $payroll
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Payroll $payroll)
+    public function update(Request $request, $payroll_id, $user_id)
     {
-        //
+      $payroll = Payroll::findOrFail($payroll_id);
+      $user = User::findOrFail($user_id);
+
+      if (empty($payroll)) {
+        return JsonError::message("No data found");
+      }
+      
+      $manager = $request->user();
+      
+      $this->payrollService->update([
+        "manager_id" => $manager->id,
+        "user_id" => $user->id,
+        "sum" => $request->input('sum'),
+        "bonus" => $request->input('bonus'),
+      ], $payroll_id);
     }
 
     /**
@@ -118,8 +136,17 @@ class PayrollController extends Controller
      * @param  \App\Payroll  $payroll
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Payroll $payroll)
+    public function delete($id)
     {
-        //
+      try {
+        $p = Payroll::find($id)->delete();
+        if ($p) {
+            return JsonSuccess::message('Payroll deleted');
+        }
+      } catch(Exception $e) {
+          return JsonError::message('Could not delete payroll, try again later');
+      }
+
+    return JsonError::message('Something went wrong');
     }
 }
