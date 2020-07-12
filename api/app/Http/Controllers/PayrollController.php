@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Response\JsonSuccess;
 use App\Payroll;
+use App\Role;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Service\PayrollService;
@@ -23,9 +24,16 @@ class PayrollController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $req)
     {
-      return Payroll::simplePaginate(10);
+      $user = $req->user();
+      if ($user->role_id == Role::$EMPLOYEE) {
+        return Payroll::with("user")->where("user_id", $user->id)->simplePaginate(10);
+      }
+      if ($user->role_id == Role::$CEO || $user->role_id == Role::$FINANCIAL_MANAGER) {
+        return Payroll::with("user")->simplePaginate(10);
+      }
+      return JsonError::message('No role access');
     }
 
     public function getById($id) {
@@ -119,9 +127,9 @@ class PayrollController extends Controller
       if (empty($payroll)) {
         return JsonError::message("No data found");
       }
-      
+
       $manager = $request->user();
-      
+
       $this->payrollService->update([
         "manager_id" => $manager->id,
         "user_id" => $user->id,
