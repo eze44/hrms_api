@@ -53,7 +53,7 @@ class UserRequestController extends Controller
             $this->userRequestService->insert([
                 'type_id' => $request->input('type_id'),
                 'user_id' => $user->id,
-                'details' => $request->input('type_id'),
+                'details' => $request->input('details'),
                 'status_id' => UserRequestStatus::$PENDING,
                 'date_from' => $request->input('date_to'),
                 'date_to' => $request->input('date_to'),
