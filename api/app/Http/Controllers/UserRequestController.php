@@ -57,8 +57,8 @@ class UserRequestController extends Controller
                 'status_id' => UserRequestStatus::$PENDING,
                 'date_from' => $request->input('date_to'),
                 'date_to' => $request->input('date_to'),
-                'created_at' => $date,
-                'updated_at' => $date
+                'created_at' => $request->input('created_at'),
+                'updated_at' => $request->input('updated_at')
             ]);
         }
         catch (Exception $e) {

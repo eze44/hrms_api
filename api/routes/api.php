@@ -87,6 +87,6 @@ Route::group(['middleware' => 'check-token'], function($router) {
   $router->post('/requests', 'UserRequestController@create');
   $router->get('/requests', 'UserRequestController@index');
   $router->get('/requests/{id}', 'UserRequestController@getById');
-  $router->patch('/requests/{id}', 'UserRequestsController@approve');
-  $router->patch('/requests/{id}', 'UserRequestsController@deny');
+  $router->patch('/requests/approve/{id}', 'UserRequestController@approve');
+  $router->patch('/requests/deny/{id}', 'UserRequestController@deny');
 });
