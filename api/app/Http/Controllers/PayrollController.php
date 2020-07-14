@@ -6,8 +6,10 @@ use App\Http\Response\JsonSuccess;
 use App\Payroll;
 use App\Role;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Service\PayrollService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class PayrollController extends Controller
@@ -26,11 +28,36 @@ class PayrollController extends Controller
      */
     public function index(Request $req)
     {
+        $from = $req->query("date_from");
+        $to = $req->query("date_to");
+        $has_bonus = $req->query("has_bonus") ? $req->query("has_bonus") : false;
       $user = $req->user();
       if ($user->role_id == Role::$EMPLOYEE) {
+          if ($from && $to) {
+              if ($has_bonus) {
+                  return Payroll::with("user")
+                      ->whereBetween(DB::raw('DATE(created_at)'), [$from, $to])
+                      ->where("bonus", ">", 0)
+                      ->where("user_id", $user->id)->simplePaginate(10);
+              }
+              return Payroll::with("user")
+                  ->whereBetween(DB::raw('DATE(created_at)'), [$from, $to])
+                  ->where("user_id", $user->id)->simplePaginate(10);
+          }
         return Payroll::with("user")->where("user_id", $user->id)->simplePaginate(10);
       }
       if ($user->role_id == Role::$CEO || $user->role_id == Role::$FINANCIAL_MANAGER) {
+          if($from && $to) {
+              if ($has_bonus) {
+                  return Payroll::with("user")
+                      ->whereBetween(DB::raw('DATE(created_at)'), [$from, $to])
+                      ->where("bonus", ">", 0)
+                      ->simplePaginate(10);
+              }
+              return Payroll::with("user")
+                  ->whereBetween(DB::raw('DATE(created_at)'), [$from, $to])
+                  ->simplePaginate(10);
+          }
         return Payroll::with("user")->simplePaginate(10);
       }
       return JsonError::message('No role access');
