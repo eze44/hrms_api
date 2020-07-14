@@ -25,8 +25,29 @@ class ApplicantController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $req)
     {
+        $fname = $req->query("first_name") ? $req->query("first_name") : "";
+        $lname = $req->query("last_name") ? $req->query("last_name") : "";
+        $position = $req->query("position");
+
+        if (($fname || $lname) && $position != null) {
+            return Applicant::whereHas("position", function ($query) use ($position) {
+                $query->where('id', $position);
+            })
+                ->where("first_name", "like", $fname)
+                ->orWhere("last_name", "like", $lname)->simplePaginate(10);
+        }
+
+        if ($position) {
+            return Applicant::whereHas("position", function ($query) use ($position) {
+                $query->where('id', $position);
+            })->simplePaginate(10);
+        }
+
+        if ($fname || $lname) {
+            return Applicant::where("first_name", "like", $fname)->orWhere("last_name", "like", $lname)->simplePaginate(10);
+        }
         return Applicant::simplePaginate(10);
     }
 
