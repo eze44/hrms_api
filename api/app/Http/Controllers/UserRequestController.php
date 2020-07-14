@@ -28,10 +28,10 @@ class UserRequestController extends Controller
     {
       $user = $request->user();
       if ($user->role_id == Role::$EMPLOYEE) {
-        return UserRequest::with("user")->where("user_id", $user->id)->simplePaginate(10);
+        return UserRequest::with([("user")->where("user_id", $user->id), "user_request_status", ""])->simplePaginate(10);
       }
       if ($user->role_id == Role::$CEO || $user->role_id == Role::$FINANCIAL_MANAGER) {
-        return UserRequest::with("user")->simplePaginate(10);
+        return UserRequest::with("user", "user_request_status", "user_request_type")->simplePaginate(10);
       }
       return JsonError::message('No role access');
     }
@@ -53,7 +53,7 @@ class UserRequestController extends Controller
             $this->userRequestService->insert([
                 'type_id' => $request->input('type_id'),
                 'user_id' => $user->id,
-                'details' => $request->input('type_id'),
+                'details' => $request->input('details'),
                 'status_id' => UserRequestStatus::$PENDING,
                 'date_from' => $request->input('date_to'),
                 'date_to' => $request->input('date_to'),
