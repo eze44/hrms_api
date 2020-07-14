@@ -81,3 +81,12 @@ Route::group(['middleware' => 'check-token'], function($router) {
   $router->patch('/payrolls/{id}/{user_id}', 'PayrollController@update');
   $router->delete('/payrolls/{id}', 'PayrollController@delete');
 });
+
+//user requests routes
+Route::group(['middleware' => 'check-token'], function($router) {
+  $router->post('/requests', 'UserRequestController@create');
+  $router->get('/requests', 'UserRequestController@index');
+  $router->get('/requests/{id}', 'UserRequestController@getById');
+  $router->patch('/requests/{id}', 'UserRequestsController@approve');
+  $router->patch('/requests/{id}', 'UserRequestsController@deny');
+});
