@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
  */
 interface CRUDInterface
 {
-  public function index();
+  public function index(Request $req);
   public function getById($id);
   public function create(Request $request);
   public function update(Request $request, $id);

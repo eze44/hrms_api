@@ -30,8 +30,32 @@ class UserController extends Controller implements CRUDInterface
       return $req->user();
     }
 
-    public function index() {
-      return User::simplePaginate(10);
+    public function index(Request $req) {
+        $email_query = $req->query("email");
+        $department_query = $req->query("department");
+        $role_query = $req->query("role");
+        if ($email_query && $department_query && $role_query) {
+            return User::whereHas('department', function ($query) use ($department_query) {
+                $query->where('id', $department_query);
+            })->whereHas('role', function ($query) use ($role_query) {
+                $query->where('id', $role_query);
+            })->where("email", 'LIKE', $email_query)->simplePaginate(10);
+        }
+        if ($email_query) {
+            return User::where("email", 'LIKE', $email_query)->simplePaginate(10);
+        }
+        if ($department_query) {
+            return User::whereHas('department', function ($query) use ($department_query) {
+                $query->where('id', $department_query);
+            })->simplePaginate(10);
+        }
+        if ($role_query) {
+            return User::whereHas('role', function ($query) use ($role_query) {
+                $query->where('id', $role_query);
+            })->simplePaginate(10);
+        }
+
+        return User::simplePaginate(10);
     }
 
     public function getById($id) {
